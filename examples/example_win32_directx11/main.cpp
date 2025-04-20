@@ -6,6 +6,9 @@
 #include <iostream>
 #include <Windows.h>
 #include <conio.h>
+#include <utility>
+#include <cmath>
+#include <vector>
 
 // Data
 static ID3D11Device*            g_pd3dDevice = nullptr;
@@ -21,6 +24,52 @@ void CleanupDeviceD3D();
 void CreateRenderTarget();
 void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+struct RGBColor
+{
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+};
+
+struct Point
+{
+    int a;
+    int b;
+};
+
+RGBColor GetColorAtPos(int x, int y)
+{
+    static HDC dc = GetDC(NULL);
+    COLORREF c_Pixel = GetPixel(dc, x, y);
+
+    return RGBColor{(uint8_t)GetRValue(c_Pixel), (uint8_t)GetGValue(c_Pixel), (uint8_t)GetBValue(c_Pixel)};
+}
+
+// uses <cmath>
+Point GetPxAtAngle(Point origin, float radius, int angle)
+{
+    float f_AngleRadians = angle * 3.14159 / 180.0f;
+    Point p_NewPoint;
+    p_NewPoint.a = origin.a + (radius * std::sin(f_AngleRadians));
+    p_NewPoint.b = origin.b + (radius * std::cos(f_AngleRadians));
+
+    return p_NewPoint;
+}
+
+// uses <vector>
+std::vector<Point> GetNPointsInCircle(Point origin, float radius, int n)
+{
+    std::vector<Point> v_Points;
+
+    for (int i = 0; i < n; i++)
+    {
+        float f_Angle = (360 / n) * i;
+        v_Points.push_back(GetPxAtAngle(origin, radius, f_Angle));
+    }
+
+    return v_Points;
+}
 
 // Main code
 int main(int, char**)
@@ -85,22 +134,22 @@ int main(int, char**)
     bool done = false;
 
     std::pair<float, float> px_pos[16] = {
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
-        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5), (screen_h * 0.5) * 0.972222222 - 85),
+        std::make_pair((screen_w * 0.5), (screen_h * 0.5) * 0.972222222 - 85),
+        std::make_pair((screen_w * 0.5), (screen_h * 0.5) * 0.972222222 - 85),
+        std::make_pair((screen_w * 0.5), (screen_h * 0.5) * 0.972222222 - 85),
+        std::make_pair((screen_w * 0.5) + 85, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 85, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 85, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 85, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5), (screen_h * 0.5) * 0.972222222 + 85),
+        std::make_pair((screen_w * 0.5), (screen_h * 0.5) * 0.972222222 + 85),
+        std::make_pair((screen_w * 0.5), (screen_h * 0.5) * 0.972222222 + 85),
+        std::make_pair((screen_w * 0.5), (screen_h * 0.5) * 0.972222222 + 85),
+        std::make_pair((screen_w * 0.5) - 85, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) - 85, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) - 85, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) - 85, (screen_h * 0.5) * 0.972222222),
     };
 
     ImGui::SetNextWindowPos(ImVec2(5, 5));
@@ -149,6 +198,8 @@ int main(int, char**)
             if (ImGui::Button("Set pause hotkey")) {
                 //code
             }
+
+        
         } ImGui::End();
 
         // Rendering
@@ -164,6 +215,8 @@ int main(int, char**)
         g_SwapChainOccluded = (hr == DXGI_STATUS_OCCLUDED);
 
         // Executes while Skill Checker is active
+
+        /*
         if (sc_is_active) {
             HDC dng = GetDC(NULL);
 
@@ -178,6 +231,16 @@ int main(int, char**)
                 }
             }
         }
+        */
+        static HDC dng = GetDC(NULL);
+        static std::vector<Point> circle_points = GetNPointsInCircle(Point{500, 500}, 50, 32);
+        for (Point p : circle_points)
+        {
+            SetPixel(dng, p.a, p.b, RGB(255, 0, 255));
+        }
+
+        SetPixel(dng, 500, 500, RGB(255, 255, 255));
+
 
     }
 
