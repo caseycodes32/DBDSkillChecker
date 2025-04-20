@@ -6,7 +6,6 @@
 #include <iostream>
 #include <Windows.h>
 #include <conio.h>
-#include <utility>
 #include <cmath>
 #include <vector>
 
@@ -47,7 +46,7 @@ RGBColor GetColorAtPos(int x, int y)
 }
 
 // uses <cmath>
-Point GetPxAtAngle(Point origin, float radius, int angle)
+Point GetPxAtAngle(Point origin, float radius, float angle)
 {
     float f_AngleRadians = angle * 3.14159 / 180.0f;
     Point p_NewPoint;
@@ -64,7 +63,7 @@ std::vector<Point> GetNPointsInCircle(Point origin, float radius, int n)
 
     for (int i = 0; i < n; i++)
     {
-        float f_Angle = (360 / n) * i;
+        float f_Angle = (360.0f / n) * i;
         v_Points.push_back(GetPxAtAngle(origin, radius, f_Angle));
     }
 
@@ -233,7 +232,7 @@ int main(int, char**)
         }
         */
         static HDC dng = GetDC(NULL);
-        static std::vector<Point> circle_points = GetNPointsInCircle(Point{500, 500}, 50, 32);
+        static std::vector<Point> circle_points = GetNPointsInCircle(Point{500, 500}, 50, 64);
         for (Point p : circle_points)
         {
             SetPixel(dng, p.a, p.b, RGB(255, 0, 255));
