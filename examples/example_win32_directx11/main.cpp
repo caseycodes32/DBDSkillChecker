@@ -1,16 +1,11 @@
-// Dear ImGui: standalone example application for DirectX 11
-
-// Learn about Dear ImGui:
-// - FAQ                  https://dearimgui.com/faq
-// - Getting Started      https://dearimgui.com/getting-started
-// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
-// - Introduction, links and more at the top of imgui.cpp
-
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
 #include <d3d11.h>
 #include <tchar.h>
+#include <iostream>
+#include <Windows.h>
+#include <conio.h>
 
 // Data
 static ID3D11Device*            g_pd3dDevice = nullptr;
@@ -30,6 +25,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 // Main code
 int main(int, char**)
 {
+    //ImGui_ImplWin32_EnableDpiAwareness();
+
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
@@ -57,34 +54,19 @@ int main(int, char**)
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-    // Load Fonts
-    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-    // - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-    // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
-    // - Read 'docs/FONTS.md' for more instructions and details.
-    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //io.Fonts->AddFontDefault();
-    //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
-    //IM_ASSERT(font != nullptr);
-
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_Border] = ImVec4(0.35, 0, 0, 1);
     style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.35, 0, 0, 1);
     style.Colors[ImGuiCol_FrameBg] = ImVec4(0.35, 0, 0, 1);
+    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.35, 0, 0, 1);
     style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.55, 0, 0, 1);
     style.Colors[ImGuiCol_Button] = ImVec4(0.35, 0, 0, 1);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.35, 0, 0, 1);
     style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.55, 0, 0, 1);
     style.Colors[ImGuiCol_CheckMark] = ImVec4(0.85, 0, 0, 1);
 
@@ -94,13 +76,32 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
-    int screen_height_x = GetSystemMetrics(SM_CXSCREEN);
-    int screen_height_y = GetSystemMetrics(SM_CYSCREEN);
+    float screen_w = GetSystemMetrics(SM_CXSCREEN);
+    float screen_h = GetSystemMetrics(SM_CYSCREEN);
 
     bool sc_is_active = false;
     bool pause_skill_checker = false;
     bool opened = true;
     bool done = false;
+
+    std::pair<float, float> px_pos[16] = {
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+        std::make_pair(screen_w, screen_h),
+    };
 
     ImGui::SetNextWindowPos(ImVec2(5, 5));
     while (!done)
@@ -140,48 +141,11 @@ int main(int, char**)
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        // Draw a red pixel in the center of the screen using ImGui's background draw list
-        {
-            ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
-            // Use io.DisplaySize which is updated by the backend (ImGui_ImplWin32_NewFrame)
-            // This gives the current renderable window size.
-            float center_x = io.DisplaySize.x;
-            float center_y = io.DisplaySize.y;
-            ImU32 red_color = IM_COL32(255, 0, 0, 255); // Red, fully opaque
-
-            // AddRectFilled draws a rectangle. We make it 1x1 pixels.
-            // Note: Screen coordinates originate at the top-left (0,0).
-            draw_list->AddRectFilled(
-                ImVec2(center_x * 0.53359375f, center_y * 0.5f),         // Top-left corner of the pixel
-                ImVec2(center_x * 0.53359375f + 1.0f, center_y * 0.5f + 1.0f), // Bottom-right corner of the pixel
-                red_color
-            );
-
-            draw_list->AddRectFilled(
-                ImVec2(center_x * 0.46640625f, center_y * 0.5f),         // Top-left corner of the pixel
-                ImVec2(center_x * 0.46640625f + 1.0f, center_y * 0.5f + 1.0f), // Bottom-right corner of the pixel
-                red_color
-            );
-
-            draw_list->AddRectFilled(
-                ImVec2(center_x * 0.5f, center_y * 0.426388889),         // Top-left corner of the pixel
-                ImVec2(center_x * 0.5f + 1.0f, center_y * 0.426388889 + 1.0f), // Bottom-right corner of the pixel
-                red_color
-            );
-
-            draw_list->AddRectFilled(
-                ImVec2(center_x * 0.5f, center_y * 0.573611111),         // Top-left corner of the pixel
-                ImVec2(center_x * 0.5f + 1.0f, center_y * 0.573611111 + 1.0f), // Bottom-right corner of the pixel
-                red_color
-            );
-        }
-
         // ImGui Window
-        ImGui::SetNextWindowSize(ImVec2(screen_height_x / 8, screen_height_y / 8));
+        ImGui::SetNextWindowSize(ImVec2(screen_w / 8, screen_h / 8));
         if (ImGui::Begin("DBD Skill Checker", & opened, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
             ImGui::Checkbox("Activate Skill Checker", &sc_is_active);
             ImGui::Checkbox("Enable pause hotkey", &pause_skill_checker);
-            //ImGui::Text("(Enables the Skill Checker to stop running while the assigned hotkey is pressed)");
             if (ImGui::Button("Set pause hotkey")) {
                 //code
             }
@@ -200,8 +164,19 @@ int main(int, char**)
         g_SwapChainOccluded = (hr == DXGI_STATUS_OCCLUDED);
 
         // Executes while Skill Checker is active
-        while (sc_is_active) {
+        if (sc_is_active) {
+            HDC dng = GetDC(NULL);
 
+            // Checks if pause hotkey isn't pressed to determine if operation should be paused
+            if (!pause_skill_checker) {
+                for (int i = 0; i < 16; i++) {
+                    COLORREF c = GetPixel(dng, std::get<0>(px_pos[i]), std::get<1>(px_pos[i]));
+                    SetPixel(dng, std::get<0>(px_pos[i]), std::get<1>(px_pos[i]), RGB(154, 255, 0));
+                    std::cout << "(" << (int)GetRValue(c) << ", ";
+                    std::cout << (int)GetGValue(c) << ", ";
+                    std::cout << (int)GetBValue(c) << ")" << std::endl;
+                }
+            }
         }
 
     }
