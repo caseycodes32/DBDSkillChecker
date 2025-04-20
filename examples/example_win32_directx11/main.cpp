@@ -77,7 +77,7 @@ bool ColorExceedsValue(RGBColor a, RGBColor b)
 
 int NormalizeVectorIdx(int n, int idx)
 {
-    if ((idx > 0) && (idx < n)) return idx;
+    if ((idx >= 0) && (idx < n)) return idx;
     if (idx < 0) return (n + idx);
     else return (idx - n);
 }
