@@ -28,7 +28,7 @@ int main(int, char**)
     //ImGui_ImplWin32_EnableDpiAwareness();
 
     // Create application window
-    //ImGui_ImplWin32_EnableDpiAwareness();
+    ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
     ::RegisterClassExW(&wc);
     HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"Dear ImGui DirectX11 Example", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, nullptr, nullptr, wc.hInstance, nullptr);
@@ -85,22 +85,22 @@ int main(int, char**)
     bool done = false;
 
     std::pair<float, float> px_pos[16] = {
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
-        std::make_pair(screen_w, screen_h),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
+        std::make_pair((screen_w * 0.5) + 1, (screen_h * 0.5) * 0.972222222),
     };
 
     ImGui::SetNextWindowPos(ImVec2(5, 5));
