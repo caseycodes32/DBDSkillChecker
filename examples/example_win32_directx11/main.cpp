@@ -70,6 +70,44 @@ std::vector<Point> GetNPointsInCircle(Point origin, float radius, int n)
     return v_Points;
 }
 
+bool ColorExceedsValue(RGBColor a, RGBColor b)
+{
+    return ((a.r > b.r) && (a.g > b.g) && (a.b > b.b));
+}
+
+int NormalizeVectorIdx(int n, int idx)
+{
+    if ((idx > 0) && (idx < n)) return idx;
+    if (idx < 0) return (n + idx);
+    else return (idx - n);
+}
+
+Point GetCenterOfArc(std::vector<Point> Points)
+{
+    // find target points who have two appropriate neighbors
+    std::vector<Point> v_TargetPoints;
+    for (int i = 0; i < Points.size(); i++)
+    {
+        RGBColor c_PColor = GetColorAtPos(Points.at(i).a, Points.at(i).b);
+        if (ColorExceedsValue(c_PColor, RGBColor{250, 250, 250}))
+        {
+            // get idx - 1 neighbor color
+            RGBColor c_N1Color = GetColorAtPos(Points.at(NormalizeVectorIdx(Points.size(), i - 1)).a, Points.at(NormalizeVectorIdx(Points.size(), i - 1)).b);
+            // get idx + 1 neighbor color
+            RGBColor c_N2Color = GetColorAtPos(Points.at(NormalizeVectorIdx(Points.size(), i + 1)).a, Points.at(NormalizeVectorIdx(Points.size(), i + 1)).b);
+            if (ColorExceedsValue(c_N1Color, RGBColor{250, 250, 250}) && ColorExceedsValue(c_N2Color, RGBColor{250, 250, 250}))
+            {
+                v_TargetPoints.push_back(Points.at(i));
+            }
+        }
+    }
+
+    // find the most suitable point to use
+    Point p_CenterPoint = v_TargetPoints.at(v_TargetPoints.size() / 2);
+
+    return p_CenterPoint;
+}
+
 // Main code
 int main(int, char**)
 {
